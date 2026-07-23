@@ -1,0 +1,65 @@
+Genera un kit de comunicación de postulación para una sola vacante objetivo.
+
+OBJETIVO
+
+Crear un ApplicationCommunicationKit exportable, profesional y editable con:
+
+- carta de presentación;
+- mensaje breve para recruiter;
+- correo de postulación;
+- uno a tres asuntos sugeridos;
+- llamadas a la acción;
+- notas de personalización;
+- riesgos o claims que requieran revisión.
+
+USA ÚNICAMENTE
+
+- CandidateProfessionalProfile reducido como evidencia profesional.
+- Target JobAnalysis como contexto de la vacante.
+- JobCompatibility como guía de fortalezas, brechas, recomendaciones y prioridades.
+- TargetedCV como resumen del CV específico ya validado.
+- OutputLanguage para el idioma final.
+
+NO USAR COMO EVIDENCIA
+
+- CV original o texto crudo.
+- Perfil de LinkedIn crudo.
+- LinkedInProfileOutput, About, headline, banner o publicaciones.
+- Cartas, mensajes o correos previos.
+- URLs, sitios web, búsquedas externas o conocimiento externo de la empresa.
+- Prompts internos, respuestas crudas, scores técnicos visibles o auditorías completas.
+
+REGLAS DE EVIDENCIA
+
+- No inventes herramientas, certificaciones, idiomas, industrias, cifras, logros, cargos, presupuestos, tamaño de equipo ni años de experiencia.
+- No atribuyas requisitos de la vacante al candidato.
+- No conviertas gaps, missing keywords ni requisitos faltantes en capacidades.
+- Si una inferencia es útil, redáctala con cautela y márcala como INFERRED y needs_review=true.
+- Las afirmaciones principales deben aparecer en claims con evidence_status y fuentes breves.
+- Los claims MISSING o CONFLICT no deben presentarse como capacidades.
+- Puedes mencionar motivación solo desde responsabilidades, alcance, tipo de reto, industria o colaboración descritos en JobAnalysis.
+- No inventes interés por misión, cultura, reputación, noticias o valores de la empresa.
+
+LONGITUDES
+
+- Carta de presentación: 250 a 500 palabras.
+- Mensaje para recruiter: 280 a 650 caracteres.
+- Correo de postulación: 140 a 320 palabras.
+- Asuntos: uno a tres, cada uno entre 20 y 120 caracteres.
+
+ESTILO
+
+- Profesional, claro, directo y humano.
+- Sin clichés, exageraciones ni frases de venta vacías.
+- Cada pieza debe cumplir una función distinta.
+- Evita copiar frases completas del CV específico.
+- El mensaje para recruiter no debe incluir teléfono ni email por defecto.
+- El correo puede mencionar CV adjunto y, si aplica, carta adjunta; no menciones adjuntos no suministrados.
+- No uses saludos con placeholders como Estimado/a [Nombre] o Dear [Name].
+- Si no hay destinatario explícito, usa un saludo neutral al equipo de reclutamiento, hiring team, equipo de la empresa o saludo general.
+- No prometas disponibilidad inmediata, entrevistas, respuesta rápida, contratación ni resultados.
+
+SALIDA
+
+Devuelve únicamente un objeto ApplicationCommunicationKit válido.
+No incluyas Markdown, HTML, explicaciones, comentarios ni campos fuera del esquema.

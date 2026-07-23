@@ -240,6 +240,7 @@ def _store_generation_result(
         _dict_set(SessionKeys.TARGETED_CV_EDIT_STATES, job_index, edit_state)
         _dict_set(SessionKeys.TARGETED_CV_EDIT_VALIDATIONS, job_index, None)
         _clear_targeted_cv_bytes(job_index)
+        _clear_application_communication_for_job(job_index)
         st.session_state[SessionKeys.TARGETED_CV_ZIP_BYTES] = None
         return
 
@@ -254,6 +255,7 @@ def _store_generation_result(
     _dict_set(SessionKeys.TARGETED_CV_EDIT_STATES, job_index, None)
     _dict_set(SessionKeys.TARGETED_CV_EDIT_VALIDATIONS, job_index, None)
     _clear_targeted_cv_bytes(job_index)
+    _clear_application_communication_for_job(job_index)
 
 
 def _edited_cvs_for_zip(
@@ -390,6 +392,25 @@ def _clear_targeted_cv_bytes(job_index: int) -> None:
     _dict_set(SessionKeys.TARGETED_CV_PDF_BYTES, job_index, None)
     _dict_set(SessionKeys.TARGETED_CV_EXPORT_FINGERPRINTS, job_index, None)
     st.session_state[SessionKeys.TARGETED_CV_ZIP_BYTES] = None
+
+
+def _clear_application_communication_for_job(job_index: int) -> None:
+    for key in (
+        SessionKeys.APPLICATION_COMMUNICATION_RESULTS,
+        SessionKeys.APPLICATION_COMMUNICATION_KITS,
+        SessionKeys.APPLICATION_COMMUNICATION_AUDITS,
+        SessionKeys.APPLICATION_COMMUNICATION_REDUNDANCY_AUDITS,
+        SessionKeys.APPLICATION_COMMUNICATION_INPUT_FINGERPRINTS,
+        SessionKeys.APPLICATION_COMMUNICATION_EDIT_STATES,
+        SessionKeys.APPLICATION_COMMUNICATION_EDIT_VALIDATIONS,
+        SessionKeys.APPLICATION_COMMUNICATION_EXPORT_FINGERPRINTS,
+        SessionKeys.APPLICATION_COMMUNICATION_MARKDOWN_BYTES,
+        SessionKeys.APPLICATION_COMMUNICATION_TXT_BYTES,
+        SessionKeys.APPLICATION_COMMUNICATION_DOCX_BYTES,
+        SessionKeys.APPLICATION_COMMUNICATION_PDF_BYTES,
+    ):
+        _dict_set(key, job_index, None)
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_ZIP_BYTES] = None
 
 
 def _targeted_cv_bytes_available(job_index: int) -> bool:

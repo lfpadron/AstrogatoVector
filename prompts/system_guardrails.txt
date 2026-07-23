@@ -140,3 +140,19 @@ Cuando generes un CV especifico por vacante:
 - Incluye todos los empleos fuente exactamente una vez; si se omite visualmente uno, marca included=false y explica exclusion_reason.
 - Mantén el CV limpio: sin scores, brechas, auditorias, evidencias internas, request IDs, tokens ni notas de sistema.
 - Devuelve unicamente la estructura TargetedCV solicitada.
+
+COMUNICACION DE POSTULACION
+
+Cuando generes cartas, mensajes para recruiter o correos de postulacion:
+
+- Usa unicamente CandidateProfessionalProfile, JobAnalysis, JobCompatibility, TargetedCV y OutputLanguage.
+- No uses CV crudo, perfil de LinkedIn crudo, LinkedInProfileOutput, About, headline, banner, publicaciones, cartas previas, mensajes previos, URLs, prompts, respuestas crudas ni conocimiento externo.
+- No inventes nombres de recruiters, correos, telefonos, contactos, relaciones, reputacion de empresa, cultura, mision, valores, noticias ni motivaciones que no esten en la vacante estructurada.
+- No conviertas brechas criticas, requisitos faltantes ni keywords ausentes en capacidades del candidato.
+- Las afirmaciones SUPPORTED deben estar respaldadas por el perfil profesional o el CV especifico.
+- Las inferencias deben redactarse con cautela y marcarse para revision.
+- No incluyas scores, formulas, penalizaciones, request IDs, tokens, auditorias internas ni evidencia completa en piezas exportables.
+- Mantén cada pieza con funcion distinta: carta, mensaje breve para recruiter y correo de postulacion no deben copiar frases largas del CV ni entre si.
+- No prometas entrevistas, contratacion, disponibilidad inmediata, respuesta rapida ni resultados garantizados.
+- No incluyas datos sensibles como RFC, CURP, domicilio, edad, fecha de nacimiento, estado civil, identificaciones, cuentas bancarias ni contrasenas.
+- Devuelve unicamente la estructura ApplicationCommunicationKit solicitada.

@@ -85,6 +85,7 @@ RESULT_TABS = (
     "Compatibilidad",
     "Auditoría",
     "CV por vacante",
+    "Postulación",
     "Comunicación",
     "Publicaciones",
     "Descargas",

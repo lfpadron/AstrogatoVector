@@ -32,6 +32,36 @@ _TARGETED_CV_FORBIDDEN_TERMS = (
     "evidencia interna",
 )
 _TARGETED_CV_REQUIRED_SECTIONS = ("Perfil profesional", "Competencias clave", "Experiencia profesional")
+_APPLICATION_COMMUNICATION_ROOT = "application-communications"
+_APPLICATION_COMMUNICATION_REQUIRED_SECTIONS = (
+    "Carta de presentación",
+    "Mensaje para recruiter",
+    "Asuntos sugeridos",
+    "Correo de postulación",
+)
+_APPLICATION_COMMUNICATION_FORBIDDEN_TERMS = (
+    "request_id",
+    "input_tokens",
+    "output_tokens",
+    "raw_response",
+    "compatibility_score",
+    "prompt",
+    "api key",
+    "openai",
+    "evidencia completa",
+    "evidencia interna",
+)
+_APPLICATION_COMMUNICATION_PLACEHOLDERS = (
+    "[nombre",
+    "[name",
+    "estimado/a [",
+    "dear [",
+    "lorem ipsum",
+    "por completar",
+    "pendiente",
+    "xxx",
+    "tbd",
+)
 
 
 class ExportAuditService:
@@ -288,6 +318,153 @@ class ExportAuditService:
             warnings.extend(result.warnings)
         return ExportAuditResult(passed=not findings, findings=findings, warnings=warnings)
 
+    def audit_application_communication_markdown(self, data: bytes) -> ExportAuditResult:
+        """Audit one application communication Markdown export."""
+        findings: list[str] = []
+        warnings: list[str] = []
+        _validate_size(data, MAX_INDIVIDUAL_EXPORT_SIZE_MB, "application_communication_markdown", findings)
+        text = _decode_utf8(data, findings, "application_communication_markdown")
+        if text:
+            if "<html" in text.casefold():
+                findings.append("application_communication_markdown: no debe contener HTML.")
+            _validate_application_communication_sections(text, "application_communication_markdown", findings)
+            _validate_no_application_communication_internal_terms(text, "application_communication_markdown", findings)
+        return ExportAuditResult(passed=not findings, findings=findings, warnings=warnings)
+
+    def audit_application_communication_txt(self, data: bytes) -> ExportAuditResult:
+        """Audit one application communication TXT export."""
+        findings: list[str] = []
+        warnings: list[str] = []
+        _validate_size(data, MAX_INDIVIDUAL_EXPORT_SIZE_MB, "application_communication_txt", findings)
+        text = _decode_utf8(data, findings, "application_communication_txt")
+        if text:
+            _validate_application_communication_sections(text, "application_communication_txt", findings)
+            _validate_no_application_communication_internal_terms(text, "application_communication_txt", findings)
+        return ExportAuditResult(passed=not findings, findings=findings, warnings=warnings)
+
+    def audit_application_communication_docx(self, data: bytes) -> ExportAuditResult:
+        """Audit one application communication DOCX export."""
+        findings: list[str] = []
+        _validate_size(data, MAX_INDIVIDUAL_EXPORT_SIZE_MB, "application_communication_docx", findings)
+        if not zipfile.is_zipfile(io.BytesIO(data)):
+            findings.append("application_communication_docx: firma ZIP inválida.")
+            return ExportAuditResult(passed=False, findings=findings)
+        try:
+            document = Document(io.BytesIO(data))
+        except Exception as exc:
+            findings.append(f"application_communication_docx: no se pudo abrir con python-docx: {exc}")
+            return ExportAuditResult(passed=False, findings=findings)
+        text = "\n".join(paragraph.text for paragraph in document.paragraphs)
+        if not text.strip():
+            findings.append("application_communication_docx: no contiene párrafos.")
+        _validate_application_communication_sections(text, "application_communication_docx", findings)
+        if document.inline_shapes:
+            findings.append("application_communication_docx: no debe incluir imágenes.")
+        _validate_no_application_communication_internal_terms(text, "application_communication_docx", findings)
+        return ExportAuditResult(passed=not findings, findings=findings)
+
+    def audit_application_communication_pdf(self, data: bytes) -> ExportAuditResult:
+        """Audit one application communication PDF export."""
+        findings: list[str] = []
+        _validate_size(data, MAX_INDIVIDUAL_EXPORT_SIZE_MB, "application_communication_pdf", findings)
+        if not data.startswith(b"%PDF"):
+            findings.append("application_communication_pdf: firma inválida.")
+            return ExportAuditResult(passed=False, findings=findings)
+        try:
+            reader = PdfReader(io.BytesIO(data))
+            if len(reader.pages) < 1:
+                findings.append("application_communication_pdf: no contiene páginas.")
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
+            if len(text.strip()) < 100:
+                findings.append("application_communication_pdf: no contiene texto seleccionable suficiente.")
+            _validate_application_communication_sections(text, "application_communication_pdf", findings)
+            _validate_no_application_communication_internal_terms(text, "application_communication_pdf", findings)
+        except Exception as exc:
+            findings.append(f"application_communication_pdf: no se pudo abrir: {exc}")
+        return ExportAuditResult(passed=not findings, findings=findings)
+
+    def audit_application_communication_zip(self, data: bytes) -> ExportAuditResult:
+        """Audit the application communication ZIP package."""
+        findings: list[str] = []
+        _validate_size(data, MAX_FINAL_ZIP_SIZE_MB, "application_communication_zip", findings)
+        try:
+            with zipfile.ZipFile(io.BytesIO(data), "r") as archive:
+                names = archive.namelist()
+                lowered = {name.casefold() for name in names}
+                if f"{_APPLICATION_COMMUNICATION_ROOT}/readme.txt" not in lowered:
+                    findings.append("application_communication_zip: falta application-communications/README.txt.")
+                if f"{_APPLICATION_COMMUNICATION_ROOT}/manifest.json" not in lowered:
+                    findings.append("application_communication_zip: falta application-communications/manifest.json.")
+                vacancy_folders = sorted(
+                    {
+                        name.split("/")[1]
+                        for name in names
+                        if name.startswith(f"{_APPLICATION_COMMUNICATION_ROOT}/vacancy-") and len(name.split("/")) >= 3
+                    }
+                )
+                if not vacancy_folders:
+                    findings.append("application_communication_zip: no contiene carpetas vacancy-XX.")
+                for folder in vacancy_folders:
+                    for basename in (
+                        "communication-kit.md",
+                        "communication-kit.txt",
+                        "communication-kit.docx",
+                        "communication-kit.pdf",
+                        "review-summary.json",
+                    ):
+                        required = f"{_APPLICATION_COMMUNICATION_ROOT}/{folder}/{basename}".casefold()
+                        if required not in lowered:
+                            findings.append(f"application_communication_zip: falta {required}.")
+                for name in names:
+                    normalized = name.replace("\\", "/")
+                    if normalized.startswith("/") or ":" in normalized or ".." in normalized.split("/"):
+                        findings.append(f"application_communication_zip: ruta insegura {name}.")
+                    if not normalized.startswith(f"{_APPLICATION_COMMUNICATION_ROOT}/"):
+                        findings.append(f"application_communication_zip: archivo fuera de raíz {name}.")
+                    basename = normalized.rsplit("/", 1)[-1].casefold()
+                    if basename in {
+                        "prompt.txt",
+                        "openai-response.json",
+                        "raw-cv.txt",
+                        "original-cv.pdf",
+                        "cv.pdf",
+                        "cv.docx",
+                    }:
+                        findings.append(f"application_communication_zip: archivo prohibido {name}.")
+                for name in names:
+                    lowered_name = name.casefold()
+                    payload = archive.read(name)
+                    if lowered_name.endswith("/communication-kit.md"):
+                        findings.extend(self.audit_application_communication_markdown(payload).findings)
+                    elif lowered_name.endswith("/communication-kit.txt"):
+                        findings.extend(self.audit_application_communication_txt(payload).findings)
+                    elif lowered_name.endswith("/communication-kit.docx"):
+                        findings.extend(self.audit_application_communication_docx(payload).findings)
+                    elif lowered_name.endswith("/communication-kit.pdf"):
+                        findings.extend(self.audit_application_communication_pdf(payload).findings)
+                    elif lowered_name.endswith("/review-summary.json"):
+                        _validate_application_review_summary(payload, findings)
+        except Exception as exc:
+            findings.append(f"application_communication_zip: no se pudo abrir: {exc}")
+        return ExportAuditResult(passed=not findings, findings=findings)
+
+    def audit_application_communication_all(self, exports: dict[str, bytes]) -> ExportAuditResult:
+        """Audit all application communication export formats."""
+        findings: list[str] = []
+        warnings: list[str] = []
+        checks = {
+            "markdown": self.audit_application_communication_markdown,
+            "txt": self.audit_application_communication_txt,
+            "docx": self.audit_application_communication_docx,
+            "pdf": self.audit_application_communication_pdf,
+            "zip": self.audit_application_communication_zip,
+        }
+        for key, audit_fn in checks.items():
+            result = audit_fn(exports.get(key, b""))
+            findings.extend(result.findings)
+            warnings.extend(result.warnings)
+        return ExportAuditResult(passed=not findings, findings=findings, warnings=warnings)
+
 
 def _decode_utf8(data: bytes, findings: list[str], label: str) -> str:
     if not data:
@@ -310,3 +487,40 @@ def _validate_no_targeted_cv_internal_terms(text: str, label: str, findings: lis
     for term in _TARGETED_CV_FORBIDDEN_TERMS:
         if term.casefold() in lowered:
             findings.append(f"{label}: contiene término interno no permitido: {term}.")
+
+
+def _validate_application_communication_sections(text: str, label: str, findings: list[str]) -> None:
+    normalized_text = _strip_accents(text).casefold()
+    for section in _APPLICATION_COMMUNICATION_REQUIRED_SECTIONS:
+        if _strip_accents(section).casefold() not in normalized_text:
+            findings.append(f"{label}: falta sección {section}.")
+
+
+def _validate_no_application_communication_internal_terms(text: str, label: str, findings: list[str]) -> None:
+    lowered = _strip_accents(text).casefold()
+    for term in _APPLICATION_COMMUNICATION_FORBIDDEN_TERMS:
+        if _strip_accents(term).casefold() in lowered:
+            findings.append(f"{label}: contiene término interno no permitido: {term}.")
+    for placeholder in _APPLICATION_COMMUNICATION_PLACEHOLDERS:
+        if _strip_accents(placeholder).casefold() in lowered:
+            findings.append(f"{label}: contiene placeholder no permitido: {placeholder}.")
+
+
+def _validate_application_review_summary(data: bytes, findings: list[str]) -> None:
+    text = _decode_utf8(data, findings, "application_communication_review_summary")
+    if not text:
+        return
+    lowered = _strip_accents(text).casefold()
+    for forbidden in ("carta de presentacion", "mensaje para recruiter", "correo de postulacion"):
+        if forbidden in lowered and "review_note" not in lowered:
+            findings.append("application_communication_zip: review-summary no debe incluir textos completos.")
+    for term in _APPLICATION_COMMUNICATION_FORBIDDEN_TERMS:
+        if _strip_accents(term).casefold() in lowered and term != "compatibility_score":
+            findings.append(f"application_communication_zip: review-summary contiene término interno no permitido: {term}.")
+
+
+def _strip_accents(value: str) -> str:
+    import unicodedata
+
+    decomposed = unicodedata.normalize("NFKD", value or "")
+    return "".join(char for char in decomposed if not unicodedata.combining(char))

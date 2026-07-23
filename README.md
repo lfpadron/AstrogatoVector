@@ -8,7 +8,7 @@ Astrogato Vector es un piloto funcional para capturar información profesional, 
 
 ## Estado
 
-Estado actual: análisis, generación, compatibilidad, auditoría y paquete profesional descargable.
+Estado actual: posicionamiento LinkedIn, CV específico y kit completo de comunicación por vacante.
 
 ## Requisitos
 
@@ -56,7 +56,7 @@ Linux/macOS:
 cp .env.example .env
 ```
 
-La API de OpenAI se utiliza en el diagnóstico manual, la extracción profesional del candidato, el análisis estructurado de vacantes, la evaluación semántica de compatibilidad y la generación del perfil optimizado de LinkedIn al pulsar `Procesar`. La auditoría final de LinkedIn y ATS y el paquete profesional descargable se calculan localmente a partir de resultados estructurados ya generados.
+La API de OpenAI se utiliza en el diagnóstico manual, la extracción profesional del candidato, el análisis estructurado de vacantes, la evaluación semántica de compatibilidad, la generación del perfil optimizado de LinkedIn, la generación de CV específico por vacante y la generación de comunicación de postulación por vacante. La auditoría final de LinkedIn y ATS, las auditorías de CV, las auditorías de comunicación y el paquete profesional descargable se calculan localmente a partir de resultados estructurados ya generados.
 
 Configuración OpenAI para diagnóstico:
 
@@ -101,6 +101,18 @@ Prueba local del paquete final con datos ficticios:
 
 ```bash
 uv run python scripts/test_final_package_export.py
+```
+
+Prueba local de CV específico por vacante con datos ficticios:
+
+```bash
+uv run python scripts/test_targeted_cv_generation.py
+```
+
+Prueba local de comunicación de postulación por vacante con datos ficticios:
+
+```bash
+uv run python scripts/test_application_communications.py
 ```
 
 ## JSON Schema
@@ -274,6 +286,49 @@ También puede probarse con datos ficticios:
 uv run python scripts/test_final_package_export.py
 ```
 
+## CV específico por vacante
+
+Después de contar con perfil profesional, mercado objetivo y compatibilidad válidos, la pestaña `CV por vacante` permite generar un CV optimizado por cada vacante.
+
+En esta etapa:
+
+- se genera un `TargetedCV` por cada `JobAnalysis`;
+- se usa únicamente `CandidateProfessionalProfile`, `JobAnalysis`, `JobCompatibility` e idioma;
+- no se usa el perfil optimizado de LinkedIn, banner, CV crudo, vacantes crudas ni prompts como evidencia;
+- cada CV conserva todos los empleos fuente exactamente una vez;
+- las skills y keywords visibles deben estar respaldadas por evidencia profesional;
+- las brechas y scores quedan fuera del CV exportable;
+- las ediciones, validaciones y exportaciones se realizan localmente sin OpenAI;
+- se exporta Markdown, DOCX, PDF y ZIP en memoria.
+
+También puede probarse con datos ficticios:
+
+```bash
+uv run python scripts/test_targeted_cv_generation.py
+```
+
+## Comunicación de postulación por vacante
+
+Después de contar con perfil profesional, mercado objetivo, compatibilidad y CV específico validado, la pestaña `Postulación` permite generar un kit por cada vacante.
+
+En esta etapa:
+
+- se genera un `ApplicationCommunicationKit` por cada `JobAnalysis`;
+- se usa únicamente `CandidateProfessionalProfile`, `JobAnalysis`, `JobCompatibility`, `TargetedCV` e idioma;
+- no se usa CV crudo, LinkedIn crudo, perfil optimizado de LinkedIn, banner, publicaciones, cartas previas, mensajes previos ni conocimiento externo;
+- cada kit incluye carta de presentación, mensaje para recruiter, correo de postulación, asuntos sugeridos, llamadas a la acción, notas de personalización y riesgos a revisar;
+- los saludos no inventan nombres de recruiters ni destinatarios;
+- las brechas no se presentan como capacidades;
+- las ediciones, validaciones y exportaciones se realizan localmente sin OpenAI;
+- se exporta Markdown, TXT, DOCX, PDF y ZIP en memoria;
+- no se envían correos ni se conecta Gmail, Outlook o LinkedIn.
+
+También puede probarse con datos ficticios:
+
+```bash
+uv run python scripts/test_application_communications.py
+```
+
 ## Comportamiento actual
 
 - El consentimiento es obligatorio para procesar.
@@ -297,6 +352,8 @@ uv run python scripts/test_final_package_export.py
 - Se genera un banner PNG programático para LinkedIn desde el contenido editable, a solicitud explícita del usuario.
 - Se calcula una auditoría integral local de posicionamiento LinkedIn y ATS a partir de los resultados estructurados.
 - Se genera un paquete profesional descargable en Markdown, HTML, DOCX, PDF y ZIP desde resultados validados y contenido editado.
+- Se genera un CV específico por vacante con exportación Markdown, DOCX, PDF y ZIP desde evidencia estructurada y compatibilidad.
+- Se genera un kit de comunicación por vacante con carta, mensaje para recruiter, correo, asuntos y exportación Markdown, TXT, DOCX, PDF y ZIP.
 - Existen modelos Pydantic v2 para entrada, evidencia, mercado, perfil, compatibilidad, auditorías, comunicación, contenidos y resultado completo.
 - Los contratos están preparados para JSON Schema y futuros Structured Outputs.
 - Existen ejemplos ficticios en `schemas/examples.py` para validar serialización sin usar datos reales.
@@ -309,10 +366,15 @@ uv run python scripts/test_final_package_export.py
 - La extracción profesional envía el CV y el perfil opcional al proveedor de IA, pero no envía las vacantes.
 - El análisis de mercado envía vacantes, pero no envía CV, LinkedIn ni perfil profesional extraído.
 - La generación de LinkedIn envía solo el perfil profesional estructurado, el mercado estructurado y el idioma.
+- La generación de CV por vacante envía solo el perfil profesional estructurado, una vacante estructurada, su compatibilidad estructurada y el idioma.
+- La generación de comunicación por vacante envía solo perfil reducido, vacante estructurada, compatibilidad estructurada, CV específico validado e idioma.
 - El banner PNG se genera localmente con Pillow, sin llamadas a OpenAI, imágenes remotas, logos ni fondos externos.
 - La auditoría integral se calcula localmente y no reenvía CV, vacantes completas, perfil de LinkedIn original ni banner PNG.
 - El paquete profesional se exporta localmente en memoria, no llama OpenAI, no usa servicios web y no almacena documentos permanentemente.
 - El paquete no incluye CV original, archivos subidos, URLs, prompts, respuestas crudas, API keys, request IDs ni tokens.
+- Los CVs por vacante no incluyen scores, brechas, evidencias internas, prompts, respuestas crudas, request IDs ni tokens.
+- Los kits de postulación no incluyen CV original, vacantes crudas, evidencia completa, prompts, respuestas crudas, secretos, request IDs ni tokens.
+- Los kits de postulación no envían correos, no conectan cuentas externas y no inventan nombres de recruiters.
 - Los bytes del banner viven solo en memoria de sesión y se reemplazan al regenerar.
 - Antes de la extracción se aplica un filtro preventivo limitado de patrones sensibles evidentes.
 - Los enlaces se consultan solo como páginas públicas de texto mediante HTTP/HTTPS.
@@ -359,9 +421,10 @@ Algunos sitios no entregan texto visible en la respuesta inicial. Copia y pega l
 
 - La lectura de enlaces no accede a contenido detrás de login, muros, cookies, JavaScript obligatorio o bloqueos anti-automatización.
 - No implementa OCR.
-- No genera CV optimizado, mensajes, cartas, publicaciones, correos, PowerPoint ni Excel.
+- No genera publicaciones, PowerPoint ni Excel.
+- Los correos de postulación son borradores descargables; no se envían desde la app.
 
 ## Próximo incremento
 
-Generación de un CV optimizado y específico para cada vacante, manteniendo trazabilidad con el perfil profesional y evitando afirmaciones no respaldadas.
+Generación de un plan de cuatro semanas de publicaciones para LinkedIn, basado en la experiencia respaldada, objetivos profesionales y temas del mercado, sin revelar información confidencial ni inventar logros.
 # AstrogatoVector

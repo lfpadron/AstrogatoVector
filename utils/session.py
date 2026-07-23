@@ -88,6 +88,20 @@ class SessionKeys:
     TARGETED_CV_PDF_BYTES = "targeted_cv_pdf_bytes"
     TARGETED_CV_ZIP_BYTES = "targeted_cv_zip_bytes"
     TARGETED_CV_LAST_RUNS = "targeted_cv_last_runs"
+    APPLICATION_COMMUNICATION_RESULTS = "application_communication_results"
+    APPLICATION_COMMUNICATION_KITS = "application_communication_kits"
+    APPLICATION_COMMUNICATION_AUDITS = "application_communication_audits"
+    APPLICATION_COMMUNICATION_REDUNDANCY_AUDITS = "application_communication_redundancy_audits"
+    APPLICATION_COMMUNICATION_INPUT_FINGERPRINTS = "application_communication_input_fingerprints"
+    APPLICATION_COMMUNICATION_EDIT_STATES = "application_communication_edit_states"
+    APPLICATION_COMMUNICATION_EDIT_VALIDATIONS = "application_communication_edit_validations"
+    APPLICATION_COMMUNICATION_EXPORT_FINGERPRINTS = "application_communication_export_fingerprints"
+    APPLICATION_COMMUNICATION_MARKDOWN_BYTES = "application_communication_markdown_bytes"
+    APPLICATION_COMMUNICATION_TXT_BYTES = "application_communication_txt_bytes"
+    APPLICATION_COMMUNICATION_DOCX_BYTES = "application_communication_docx_bytes"
+    APPLICATION_COMMUNICATION_PDF_BYTES = "application_communication_pdf_bytes"
+    APPLICATION_COMMUNICATION_ZIP_BYTES = "application_communication_zip_bytes"
+    APPLICATION_COMMUNICATION_LAST_RUNS = "application_communication_last_runs"
     BANNER_RENDER_FINGERPRINT = "banner_render_fingerprint"
     BANNER_RENDER_RESULT = "banner_render_result"
     BANNER_IMAGE_BYTES = "banner_image_bytes"
@@ -196,6 +210,20 @@ def build_session_defaults() -> dict[str, Any]:
         SessionKeys.TARGETED_CV_PDF_BYTES: {},
         SessionKeys.TARGETED_CV_ZIP_BYTES: None,
         SessionKeys.TARGETED_CV_LAST_RUNS: {},
+        SessionKeys.APPLICATION_COMMUNICATION_RESULTS: {},
+        SessionKeys.APPLICATION_COMMUNICATION_KITS: {},
+        SessionKeys.APPLICATION_COMMUNICATION_AUDITS: {},
+        SessionKeys.APPLICATION_COMMUNICATION_REDUNDANCY_AUDITS: {},
+        SessionKeys.APPLICATION_COMMUNICATION_INPUT_FINGERPRINTS: {},
+        SessionKeys.APPLICATION_COMMUNICATION_EDIT_STATES: {},
+        SessionKeys.APPLICATION_COMMUNICATION_EDIT_VALIDATIONS: {},
+        SessionKeys.APPLICATION_COMMUNICATION_EXPORT_FINGERPRINTS: {},
+        SessionKeys.APPLICATION_COMMUNICATION_MARKDOWN_BYTES: {},
+        SessionKeys.APPLICATION_COMMUNICATION_TXT_BYTES: {},
+        SessionKeys.APPLICATION_COMMUNICATION_DOCX_BYTES: {},
+        SessionKeys.APPLICATION_COMMUNICATION_PDF_BYTES: {},
+        SessionKeys.APPLICATION_COMMUNICATION_ZIP_BYTES: None,
+        SessionKeys.APPLICATION_COMMUNICATION_LAST_RUNS: {},
         SessionKeys.BANNER_RENDER_FINGERPRINT: None,
         SessionKeys.BANNER_RENDER_RESULT: None,
         SessionKeys.BANNER_IMAGE_BYTES: None,
@@ -346,6 +374,25 @@ def clear_targeted_cv_state() -> None:
     st.session_state[SessionKeys.TARGETED_CV_PDF_BYTES] = {}
     st.session_state[SessionKeys.TARGETED_CV_ZIP_BYTES] = None
     st.session_state[SessionKeys.TARGETED_CV_LAST_RUNS] = {}
+    clear_application_communication_state()
+
+
+def clear_application_communication_state() -> None:
+    """Clear per-vacancy application communication outputs, edits and exports."""
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_RESULTS] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_KITS] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_AUDITS] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_REDUNDANCY_AUDITS] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_INPUT_FINGERPRINTS] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_EDIT_STATES] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_EDIT_VALIDATIONS] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_EXPORT_FINGERPRINTS] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_MARKDOWN_BYTES] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_TXT_BYTES] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_DOCX_BYTES] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_PDF_BYTES] = {}
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_ZIP_BYTES] = None
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_LAST_RUNS] = {}
 
 
 def clear_banner_render_state() -> None:

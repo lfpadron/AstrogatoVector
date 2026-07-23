@@ -21,6 +21,10 @@ from components.final_package_flow import (
     FINAL_PACKAGE_REUSE_MESSAGE,
     build_final_package_from_session,
 )
+from components.application_communication_view import (
+    render_application_communication_downloads_section,
+    render_application_communication_tab,
+)
 from components.job_analysis_flow import JOB_REPROCESS_FAILURE_MESSAGE, run_job_analysis_from_session
 from components.linkedin_profile_flow import (
     LINKEDIN_PROFILE_MISSING_STAGES_MESSAGE,
@@ -114,10 +118,12 @@ def render_results() -> None:
         _render_final_audit_tab()
     with tabs[4]:
         _render_targeted_cv_tab()
-    with tabs[7]:
+    with tabs[5]:
+        render_application_communication_tab()
+    with tabs[8]:
         _render_downloads_tab()
 
-    for tab in tabs[5:7]:
+    for tab in tabs[6:8]:
         with tab:
             st.info(EMPTY_RESULT_MESSAGE)
 
@@ -1643,6 +1649,7 @@ def _sync_targeted_cv_edit_state(cv: TargetedCV, edit_state: dict) -> None:
         _targeted_cv_dict_set(SessionKeys.TARGETED_CV_PDF_BYTES, cv.target_job_index, None)
         _targeted_cv_dict_set(SessionKeys.TARGETED_CV_EXPORT_FINGERPRINTS, cv.target_job_index, None)
         st.session_state[SessionKeys.TARGETED_CV_ZIP_BYTES] = None
+        _clear_application_communication_after_targeted_cv_edit(cv.target_job_index)
     edit_states[str(cv.target_job_index)] = current
     st.session_state[SessionKeys.TARGETED_CV_EDIT_STATES] = edit_states
     if current["edited"]:
@@ -1655,6 +1662,25 @@ def _targeted_cv_edit_state_without_metadata(state: dict) -> dict:
 
 def _targeted_cv_edit_key(job_index: int, name: str) -> str:
     return f"targeted_cv_edit_{job_index}_{name}"
+
+
+def _clear_application_communication_after_targeted_cv_edit(job_index: int) -> None:
+    for key in (
+        SessionKeys.APPLICATION_COMMUNICATION_RESULTS,
+        SessionKeys.APPLICATION_COMMUNICATION_KITS,
+        SessionKeys.APPLICATION_COMMUNICATION_AUDITS,
+        SessionKeys.APPLICATION_COMMUNICATION_REDUNDANCY_AUDITS,
+        SessionKeys.APPLICATION_COMMUNICATION_INPUT_FINGERPRINTS,
+        SessionKeys.APPLICATION_COMMUNICATION_EDIT_STATES,
+        SessionKeys.APPLICATION_COMMUNICATION_EDIT_VALIDATIONS,
+        SessionKeys.APPLICATION_COMMUNICATION_EXPORT_FINGERPRINTS,
+        SessionKeys.APPLICATION_COMMUNICATION_MARKDOWN_BYTES,
+        SessionKeys.APPLICATION_COMMUNICATION_TXT_BYTES,
+        SessionKeys.APPLICATION_COMMUNICATION_DOCX_BYTES,
+        SessionKeys.APPLICATION_COMMUNICATION_PDF_BYTES,
+    ):
+        _targeted_cv_dict_set(key, job_index, None)
+    st.session_state[SessionKeys.APPLICATION_COMMUNICATION_ZIP_BYTES] = None
 
 
 def _render_downloads_tab() -> None:
@@ -1675,6 +1701,8 @@ def _render_downloads_tab() -> None:
     _render_final_package_section(profile, market, output, compatibility, audit, stored_banner, stored_bytes)
     st.divider()
     _render_targeted_cv_downloads_section()
+    st.divider()
+    render_application_communication_downloads_section()
     st.divider()
     st.markdown("#### Descargas individuales existentes")
     _render_banner_download_section(output, stored_banner, stored_bytes)

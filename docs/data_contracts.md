@@ -29,6 +29,8 @@ AuditReport
     ↓
 FinalDeliverablePackage
     ↓
+TargetedCV + TargetedCVGenerationResult + TargetedCVAuditResult + TargetedCVATSAudit
+    ↓
 CommunicationOutput
     ↓
 FourWeekContentPlan
@@ -57,6 +59,10 @@ In the real implementation, some stages may run in parallel after the initial ca
 - `CompatibilityReport`: per-job score using fixed weighted dimensions plus requirement matches and recommended actions.
 - `AuditReport`: local final audit for LinkedIn positioning and orientative ATS alignment, generated only from `CandidateProfessionalProfile`, `TargetMarketAnalysis`, `LinkedInProfileOutput` and `CompatibilityReport`.
 - `FinalDeliverablePackage`: local export-ready package using validated results plus explicit LinkedIn edit state when available. It does not contain bytes or original source documents.
+- `TargetedCV`: export-ready CV for one specific vacancy, generated only from `CandidateProfessionalProfile`, one `JobAnalysis`, one `JobCompatibility` and output language.
+- `TargetedCVGenerationResult`: safe metadata and accepted generated CV for one vacancy.
+- `TargetedCVAuditResult`: local evidence audit for targeted CV content, roles, dates, skills, keywords and metrics.
+- `TargetedCVATSAudit`: local ATS-oriented score for one targeted CV using fixed explainable weights.
 - `CommunicationOutput`: headhunter messages and one cover letter per job.
 - `FourWeekContentPlan`: eight LinkedIn post suggestions, exactly two per week for four weeks.
 - `ApplicationResult`: top-level bundle for the complete future output. It must not include the full CV, HTML, files, API keys or Streamlit/session objects.
@@ -107,6 +113,14 @@ Both audits use deterministic local scoring, explainable component weights, find
 `FinalDeliverablePackage` consolidates validated profile, market, LinkedIn, compatibility and audit results. It may use explicit user edits from the LinkedIn edit state and marks the manifest as `user-edited` or `generated-and-audited`.
 
 Binary exports are not part of the Pydantic model. Markdown, HTML, DOCX, PDF and ZIP bytes are generated in memory and audited separately before download.
+
+## Targeted CV Export
+
+`TargetedCV` produces one Markdown, DOCX and PDF CV per vacancy plus a ZIP package under `targeted-cvs/`.
+
+The exported CV files must not contain scores, gaps, evidence excerpts, audit findings, prompts, raw responses, request IDs or tokens. Internal review information is kept in `review-summary.json` inside each ZIP vacancy folder.
+
+The DOCX layout is one-column and ATS-friendly, without tables, images or visual chrome. PDF output uses selectable text.
 
 ## Structured Outputs Readiness
 

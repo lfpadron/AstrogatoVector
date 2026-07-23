@@ -11,6 +11,13 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from schemas.audit_models import AuditReport  # noqa: E402
 from schemas.banner_models import BannerAuditResult, BannerRenderInput, BannerRenderResult  # noqa: E402
+from schemas.application_communication_models import (  # noqa: E402
+    ApplicationCommunicationAuditResult,
+    ApplicationCommunicationEditValidationResult,
+    ApplicationCommunicationGenerationResult,
+    ApplicationCommunicationKit,
+    CommunicationRedundancyAuditResult,
+)
 from schemas.communication_models import CommunicationOutput  # noqa: E402
 from schemas.compatibility_models import CompatibilityReport  # noqa: E402
 from schemas.content_models import FourWeekContentPlan  # noqa: E402
@@ -57,6 +64,11 @@ MODELS = [
     TargetedCVAuditResult,
     TargetedCVATSAudit,
     TargetedCVEditableValidationResult,
+    ApplicationCommunicationKit,
+    ApplicationCommunicationGenerationResult,
+    ApplicationCommunicationAuditResult,
+    CommunicationRedundancyAuditResult,
+    ApplicationCommunicationEditValidationResult,
     CommunicationOutput,
     FourWeekContentPlan,
     ApplicationResult,
