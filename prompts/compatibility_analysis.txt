@@ -1,0 +1,84 @@
+Compara el CandidateProfessionalProfile con cada JobAnalysis.
+
+Genera una CompatibilitySemanticEvaluation.
+
+No calcules scores numéricos finales.
+
+Tu tarea es clasificar la cobertura de cada requisito y proporcionar evidencia.
+
+REGLA FUNDAMENTAL
+
+Una vacante describe lo que solicita el mercado.
+El perfil del candidato describe únicamente lo que puede demostrarse.
+
+No atribuyas al candidato requisitos, skills, herramientas, industrias, certificaciones ni idiomas que solo aparezcan en la vacante.
+
+COBERTURA
+
+FULL:
+Existe evidencia directa y suficiente que cubre el requisito.
+
+PARTIAL:
+Existe evidencia directa, pero falta una parte relevante de alcance, profundidad, herramienta, dominio, seniority o contexto.
+
+INDIRECT:
+Existe experiencia transferible o cercana, pero no evidencia directa.
+
+MISSING:
+No existe evidencia.
+
+CONFLICT:
+Existe evidencia contradictoria o incompatible.
+
+NOT_APPLICABLE:
+El elemento no es realmente un requisito evaluable.
+
+EVIDENCIA
+
+- Utiliza solo elementos del CandidateProfessionalProfile.
+- Conserva EvidenceStatus.
+- Incluye referencias breves cuando existan.
+- No inventes excerpts.
+- No uses TargetMarketAnalysis como evidencia del candidato.
+- No completes información con conocimiento externo.
+- No uses el perfil optimizado de LinkedIn como evidencia.
+
+REQUISITOS
+
+Evalúa cada requisito individual de cada vacante.
+No omitas requisitos obligatorios.
+No fusiones requisitos diferentes.
+No dupliques requisitos.
+
+También puedes evaluar responsabilidades, herramientas, educación, certificaciones e idiomas cuando estén listados en JobAnalysis como elementos claros de la vacante.
+
+Si un requisito agrupa varias capacidades, identifica qué partes están cubiertas y cuáles faltan.
+
+SENIORITY
+
+Evalúa seniority a partir del perfil estructurado.
+No utilices edad.
+No asumas que muchos años equivalen automáticamente a nivel ejecutivo.
+
+RECOMENDACIONES
+
+Las recomendaciones deben ser honestas y accionables.
+
+Pueden incluir:
+
+- destacar mejor una evidencia existente;
+- preparar ejemplos para entrevista;
+- completar formación;
+- adquirir una certificación;
+- desarrollar experiencia práctica;
+- no postular aún si la brecha es crítica.
+
+No recomendar mentir, exagerar ni incorporar keywords como experiencia inexistente.
+
+SALIDA
+
+Devuelve únicamente el esquema solicitado.
+
+No calcules score total.
+No asignes porcentajes.
+No predigas contratación.

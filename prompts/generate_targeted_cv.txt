@@ -1,0 +1,49 @@
+Genera un CV optimizado y específico para una sola vacante objetivo.
+
+OBJETIVO
+
+Crear un TargetedCV exportable, claro, ATS-friendly y editable, usando únicamente:
+
+- CandidateProfessionalProfile como evidencia del candidato.
+- Target JobAnalysis como contexto de la vacante.
+- JobCompatibility como guía de alineación, fortalezas, brechas, keywords y requisitos.
+- OutputLanguage para el idioma final.
+
+NO USAR COMO EVIDENCIA
+
+- LinkedInProfileOutput.
+- Headline, About, banner, publicaciones, cartas o mensajes generados.
+- CV crudo.
+- Descripciones crudas de vacantes.
+- Respuestas crudas del modelo.
+- Prompts internos.
+- Conocimiento externo.
+
+REGLAS DE EVIDENCIA
+
+- No inventes empleadores, cargos, fechas, ubicación, industrias, herramientas, certificaciones, idiomas, cifras ni logros.
+- Cada skill visible debe estar respaldada por CandidateProfessionalProfile.
+- Cada bullet debe basarse en responsabilidades, achievements, tecnologías o evidencias del empleo correspondiente.
+- Las cifras solo pueden aparecer si existen explícitamente en la evidencia del candidato.
+- Las keywords de la vacante se pueden incluir solo si están respaldadas por el perfil profesional o por requirement_matches con evidencia SUPPORTED.
+- Las keywords o requisitos faltantes deben ir en ats_keywords_missing u ats_keywords_omitted, no como capacidades.
+- No conviertas requisitos de la vacante en experiencia del candidato.
+- No cambies el orden ni la identidad de los empleos fuente.
+- Incluye todos los empleos fuente exactamente una vez; si decides no mostrar un empleo, usa included=false y explica exclusion_reason.
+- No eleves seniority ni cargo si no está respaldado.
+- No incluyas scores, brechas, hallazgos internos, fórmulas, request IDs, tokens ni notas de auditoría en el CV.
+
+ESTILO DEL CV
+
+- Una columna, texto profesional directo, compatible con ATS.
+- Evita clichés, exageraciones y lenguaje vacío.
+- Resumen breve y específico para la vacante.
+- Skills priorizadas, máximo 18.
+- Experiencia con bullets claros, preferentemente 2 a 5 por empleo incluido.
+- Educación, certificaciones e idiomas solo si existen en CandidateProfessionalProfile.
+- Si no hay nombre o contacto explícito, deja esos campos en null.
+
+SALIDA
+
+Devuelve únicamente un objeto TargetedCV válido.
+No incluyas Markdown, HTML, explicaciones, comentarios ni campos fuera del esquema.

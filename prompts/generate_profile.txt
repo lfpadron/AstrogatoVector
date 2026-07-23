@@ -1,0 +1,237 @@
+Genera una propuesta optimizada de perfil de LinkedIn utilizando exclusivamente:
+
+1. La evidencia profesional respaldada del candidato.
+2. El analisis estructurado del mercado objetivo.
+
+Devuelve un LinkedInProfileOutput.
+
+REGLA FUNDAMENTAL
+
+El mercado define el vocabulario que conviene utilizar, pero no demuestra que el candidato posea una competencia.
+
+Solo incorpora como capacidades del candidato elementos con estado SUPPORTED.
+
+Los elementos INFERRED pueden utilizarse unicamente:
+
+- con redaccion cautelosa;
+- cuando no impliquen una afirmacion factual fuerte;
+- cuando se anadan a claims_requiring_review o global_review_notes.
+
+No utilices elementos MISSING como capacidades.
+
+No utilices elementos CONFLICT como capacidades.
+
+OBJETIVOS
+
+1. Generar el contenido textual de un banner profesional.
+2. Generar un headline claro y optimizado.
+3. Generar un About humano, creible y alineado con el mercado.
+4. Reescribir cada experiencia profesional.
+5. Priorizar skills respaldadas.
+6. Priorizar keywords ATS.
+7. Registrar cualquier afirmacion que requiera revision humana.
+
+TONO
+
+- Profesional.
+- Claro.
+- Humano.
+- Seguro, sin arrogancia.
+- Estrategico, sin lenguaje inflado.
+- Adecuado al seniority real.
+- Coherente con la trayectoria.
+- Orientado a reclutadores y responsables de contratacion.
+
+EVITA
+
+- results-driven;
+- passionate professional;
+- dynamic leader;
+- guru;
+- ninja;
+- rockstar;
+- visionary, salvo evidencia real;
+- best-in-class;
+- world-class;
+- proven track record, salvo que se explique con evidencia;
+- frases motivacionales genericas;
+- exceso de adjetivos;
+- afirmaciones absolutas;
+- keyword stuffing;
+- simbolos decorativos excesivos.
+
+BANNER
+
+Genera:
+
+- primary_line;
+- specialty_line;
+- supporting_line opcional;
+- visual_concept;
+- recommended_template.
+
+Reglas:
+
+- primary_line debe comunicar propuesta de valor;
+- specialty_line debe incluir entre tres y cinco especialidades;
+- supporting_line puede incluir industria, liderazgo o tecnologias;
+- no usar nombre del candidato salvo que ya sea parte de la estrategia;
+- no incluir datos de contacto;
+- no inventar certificaciones;
+- no saturar de keywords;
+- visual_concept debe ser sobrio y programaticamente realizable;
+- recommended_template debe usar un identificador sencillo.
+
+Plantillas permitidas:
+
+- professional_light;
+- professional_dark;
+- executive_blue;
+- technology_clean.
+
+No generar la imagen todavia.
+
+HEADLINE
+
+Debe:
+
+- tener maximo 220 caracteres;
+- comenzar con identidad o rol objetivo;
+- incluir keywords prioritarias respaldadas;
+- comunicar especialidad;
+- evitar el cargo actual como unica identidad;
+- evitar frases completas innecesarias;
+- utilizar separadores discretos;
+- mantenerse legible.
+
+Ejemplo de estructura:
+
+Rol objetivo | Especialidad | Industria o tecnologia | Propuesta de valor
+
+No copies titulos completos de las vacantes.
+
+ABOUT
+
+Debe:
+
+- tener entre 1,000 y 2,600 caracteres cuando exista suficiente informacion;
+- utilizar primera persona;
+- comenzar con una propuesta profesional clara;
+- explicar que problemas resuelve el candidato;
+- mencionar trayectoria y especialidades respaldadas;
+- incorporar liderazgo cuando este respaldado;
+- mencionar tecnologias unicamente cuando esten respaldadas;
+- utilizar keywords de manera natural;
+- incluir de uno a tres logros cuando existan;
+- no inventar cifras;
+- cerrar con una invitacion profesional breve;
+- evitar pedir empleo de manera desesperada;
+- evitar listas extensas;
+- mantener parrafos breves.
+
+Si la evidencia es insuficiente para alcanzar la longitud sugerida:
+
+- generar un texto mas breve;
+- no rellenar con contenido generico;
+- anadir una nota de revision.
+
+EXPERIENCIA REESCRITA
+
+Para cada empleo de CandidateProfessionalProfile:
+
+- crear exactamente una RewrittenExperienceEntry;
+- conservar empleador;
+- conservar el cargo fuente;
+- suggested_role_title solo puede normalizar o aclarar;
+- no ascender artificialmente el cargo;
+- no cambiar seniority;
+- no fusionar empleos;
+- no eliminar empleos sin explicacion;
+- separar responsabilidades de resultados mediante redaccion;
+- integrar keywords unicamente cuando la responsabilidad esta respaldada;
+- conservar cifras exactas;
+- no agregar herramientas no respaldadas;
+- no usar requisitos del mercado como evidencia;
+- escribir texto listo para copiar y pegar.
+
+SKILLS PRIORIZADAS
+
+- incluir unicamente skills SUPPORTED;
+- se permiten skills INFERRED solo al final y con nota explicita;
+- maximo 50;
+- prioridad unica y consecutiva;
+- ordenar por:
+  1. respaldo;
+  2. relevancia para el mercado;
+  3. frecuencia;
+  4. seniority;
+- no duplicar variantes;
+- indicar secciones recomendadas.
+
+Ubicaciones permitidas:
+
+- headline;
+- about;
+- experience;
+- skills;
+- projects;
+- certifications;
+- publications.
+
+KEYWORDS ATS
+
+Para cada keyword:
+
+- indicar si esta respaldada por el candidato;
+- indicar evidence_status;
+- frecuencia en vacantes;
+- prioridad;
+- secciones recomendadas.
+
+Una keyword del mercado no respaldada:
+
+- puede aparecer en la lista;
+- debe marcar supported_by_candidate=false;
+- debe marcarse MISSING;
+- no debe incorporarse como capacidad al headline, About o experiencia.
+
+GLOBAL REVIEW NOTES
+
+Registrar:
+
+- inferencias utilizadas;
+- conflictos;
+- keywords importantes no respaldadas;
+- experiencias con informacion insuficiente;
+- cargos ambiguos;
+- secciones que requieren edicion humana.
+
+IDIOMA
+
+Respeta OUTPUT_LANGUAGE.
+
+Español:
+
+- headline, About, notas y experiencia en español de Mexico;
+- cargos oficiales y tecnologias pueden conservarse en ingles;
+- no traduzcas nombres de empresas;
+- no traduzcas certificaciones oficiales.
+
+English:
+
+- use professional international English;
+- preserve proper names;
+- do not inflate fluency level;
+- do not translate evidence excerpts.
+
+ESTRUCTURA
+
+Devuelve unicamente LinkedInProfileOutput con:
+
+- banner;
+- headline;
+- about;
+- experience;
+- prioritized_skills;
+- ats_keywords;
+- global_review_notes.

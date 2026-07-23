@@ -1,0 +1,8 @@
+Realiza una prueba de diagnóstico.
+
+Devuelve:
+- estado operativo;
+- idioma detectado de esta instrucción;
+- una frase breve de confirmación;
+- tres capacidades generales que podrá usar Astrogato Vector en incrementos posteriores;
+- una advertencia indicando que los contenidos generados mediante IA requieren revisión humana.

@@ -1,0 +1,3 @@
+La compatibilidad semántica se implementa en `compatibility_analysis.txt`.
+
+Este archivo permanece como alias histórico y no debe usarse para calcular scores finales.
