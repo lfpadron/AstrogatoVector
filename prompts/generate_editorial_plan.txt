@@ -1,0 +1,112 @@
+Genera un plan editorial profesional de LinkedIn para cuatro semanas.
+
+OBJETIVO
+
+Crear un ProfessionalBrandPlan que fortalezca la marca profesional de largo plazo, mejore posicionamiento ante recruiters y refuerce especialidades respaldadas.
+
+USA ÚNICAMENTE
+
+- CandidateProfessionalProfile como evidencia profesional.
+- TargetMarketAnalysis como contexto de mercado y temas.
+- CompatibilityReport como guía de fortalezas, brechas y cobertura semántica.
+- AuditReport como guía de posicionamiento y recomendaciones.
+- OutputLanguage para el idioma final.
+
+NO USAR
+
+- CV raw.
+- LinkedIn raw.
+- Vacantes completas.
+- Cartas, correos o mensajes para recruiters.
+- Publicaciones previas.
+- URLs, búsquedas externas o conocimiento externo.
+
+REGLAS EDITORIALES
+
+- El plan no debe depender de una sola vacante.
+- Representa al profesional en el largo plazo.
+- Cada publicación debe educar, compartir experiencia, mostrar criterio, demostrar liderazgo, enseñar o reflexionar.
+- No presumas, no exageres, no inventes y no conviertas requisitos del mercado en experiencia.
+- No reveles información confidencial, clientes, datos internos, presupuestos, vulnerabilidades, incidentes ni información protegida.
+- No calcules engagement ni predigas alcance.
+
+CALENDARIO
+
+- Exactamente 4 semanas.
+- Exactamente 3 publicaciones por semana.
+- Exactamente 12 publicaciones.
+- Usar únicamente monday, wednesday y friday.
+- No usar fechas absolutas.
+
+OBJETIVOS PERMITIDOS
+
+- authority
+- experience
+- leadership
+- learning
+- methodology
+- innovation
+- reflection
+- networking
+
+TIPOS PERMITIDOS
+
+- professional_story
+- lesson_learned
+- error_to_learning
+- success_case
+- methodology
+- technical_explanation
+- market_trend
+- professional_opinion
+- mini_tutorial
+- reflection
+
+FORMATOS
+
+- short: 300 a 600 caracteres.
+- medium: 600 a 1200 caracteres.
+- long: 1200 a 2200 caracteres.
+
+Mezcla formatos en el calendario.
+
+HOOKS
+
+Cada publicación debe incluir un hook claro.
+Puede ser pregunta, experiencia, aprendizaje, error o dato profesional.
+No uses clickbait.
+
+CTA
+
+Cada CTA debe abrir conversación profesional.
+Ejemplos:
+
+- ¿Cuál ha sido tu experiencia?
+- ¿Cómo lo resolverías?
+- ¿Qué opinas?
+
+No uses:
+
+- Dale like.
+- Comparte.
+- Sígueme.
+- Follow me.
+
+HASHTAGS
+
+- Máximo 5 por publicación.
+- Deben relacionarse con especialidades, industria, liderazgo o tecnologías respaldadas.
+- No inventes hashtags no relacionados.
+- No repitas exactamente el mismo set de hashtags en publicaciones consecutivas.
+
+DIVERSIDAD
+
+- No pongas dos publicaciones consecutivas sobre el mismo tema.
+- No repitas hooks.
+- No repitas CTAs.
+- No repitas historias.
+
+SALIDA
+
+Devuelve únicamente un objeto ProfessionalBrandPlan válido.
+No incluyas Markdown, HTML, explicaciones, comentarios ni campos fuera del esquema.

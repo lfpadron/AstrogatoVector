@@ -102,6 +102,19 @@ class SessionKeys:
     APPLICATION_COMMUNICATION_PDF_BYTES = "application_communication_pdf_bytes"
     APPLICATION_COMMUNICATION_ZIP_BYTES = "application_communication_zip_bytes"
     APPLICATION_COMMUNICATION_LAST_RUNS = "application_communication_last_runs"
+    EDITORIAL_PLAN_GENERATION_RESULT = "editorial_plan_generation_result"
+    PROFESSIONAL_BRAND_PLAN = "professional_brand_plan"
+    EDITORIAL_PLAN_AUDIT = "editorial_plan_audit"
+    EDITORIAL_PLAN_INPUT_FINGERPRINT = "editorial_plan_input_fingerprint"
+    EDITORIAL_PLAN_EDIT_STATE = "editorial_plan_edit_state"
+    EDITORIAL_PLAN_EDIT_VALIDATION = "editorial_plan_edit_validation"
+    EDITORIAL_PLAN_EXPORT_FINGERPRINT = "editorial_plan_export_fingerprint"
+    EDITORIAL_PLAN_MARKDOWN_BYTES = "editorial_plan_markdown_bytes"
+    EDITORIAL_PLAN_DOCX_BYTES = "editorial_plan_docx_bytes"
+    EDITORIAL_PLAN_PDF_BYTES = "editorial_plan_pdf_bytes"
+    EDITORIAL_PLAN_HTML_BYTES = "editorial_plan_html_bytes"
+    EDITORIAL_PLAN_ZIP_BYTES = "editorial_plan_zip_bytes"
+    EDITORIAL_PLAN_LAST_RUN = "editorial_plan_last_run"
     BANNER_RENDER_FINGERPRINT = "banner_render_fingerprint"
     BANNER_RENDER_RESULT = "banner_render_result"
     BANNER_IMAGE_BYTES = "banner_image_bytes"
@@ -224,6 +237,19 @@ def build_session_defaults() -> dict[str, Any]:
         SessionKeys.APPLICATION_COMMUNICATION_PDF_BYTES: {},
         SessionKeys.APPLICATION_COMMUNICATION_ZIP_BYTES: None,
         SessionKeys.APPLICATION_COMMUNICATION_LAST_RUNS: {},
+        SessionKeys.EDITORIAL_PLAN_GENERATION_RESULT: None,
+        SessionKeys.PROFESSIONAL_BRAND_PLAN: None,
+        SessionKeys.EDITORIAL_PLAN_AUDIT: None,
+        SessionKeys.EDITORIAL_PLAN_INPUT_FINGERPRINT: None,
+        SessionKeys.EDITORIAL_PLAN_EDIT_STATE: None,
+        SessionKeys.EDITORIAL_PLAN_EDIT_VALIDATION: None,
+        SessionKeys.EDITORIAL_PLAN_EXPORT_FINGERPRINT: None,
+        SessionKeys.EDITORIAL_PLAN_MARKDOWN_BYTES: None,
+        SessionKeys.EDITORIAL_PLAN_DOCX_BYTES: None,
+        SessionKeys.EDITORIAL_PLAN_PDF_BYTES: None,
+        SessionKeys.EDITORIAL_PLAN_HTML_BYTES: None,
+        SessionKeys.EDITORIAL_PLAN_ZIP_BYTES: None,
+        SessionKeys.EDITORIAL_PLAN_LAST_RUN: None,
         SessionKeys.BANNER_RENDER_FINGERPRINT: None,
         SessionKeys.BANNER_RENDER_RESULT: None,
         SessionKeys.BANNER_IMAGE_BYTES: None,
@@ -345,6 +371,7 @@ def clear_final_audit_state() -> None:
     st.session_state[SessionKeys.FINAL_AUDIT_PROMPT_VERSION] = None
     st.session_state[SessionKeys.FINAL_AUDIT_METHODOLOGY_VERSION] = None
     clear_final_package_state()
+    clear_editorial_plan_state()
 
 
 def clear_final_package_state() -> None:
@@ -393,6 +420,23 @@ def clear_application_communication_state() -> None:
     st.session_state[SessionKeys.APPLICATION_COMMUNICATION_PDF_BYTES] = {}
     st.session_state[SessionKeys.APPLICATION_COMMUNICATION_ZIP_BYTES] = None
     st.session_state[SessionKeys.APPLICATION_COMMUNICATION_LAST_RUNS] = {}
+
+
+def clear_editorial_plan_state() -> None:
+    """Clear professional brand editorial plan outputs, edits and exports."""
+    st.session_state[SessionKeys.EDITORIAL_PLAN_GENERATION_RESULT] = None
+    st.session_state[SessionKeys.PROFESSIONAL_BRAND_PLAN] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_AUDIT] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_INPUT_FINGERPRINT] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_EDIT_STATE] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_EDIT_VALIDATION] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_EXPORT_FINGERPRINT] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_MARKDOWN_BYTES] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_DOCX_BYTES] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_PDF_BYTES] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_HTML_BYTES] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_ZIP_BYTES] = None
+    st.session_state[SessionKeys.EDITORIAL_PLAN_LAST_RUN] = None
 
 
 def clear_banner_render_state() -> None:

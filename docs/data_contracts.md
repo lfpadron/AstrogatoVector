@@ -31,9 +31,9 @@ FinalDeliverablePackage
     ↓
 TargetedCV + TargetedCVGenerationResult + TargetedCVAuditResult + TargetedCVATSAudit
     ↓
-CommunicationOutput
+ApplicationCommunicationKit + ApplicationCommunicationGenerationResult
     ↓
-FourWeekContentPlan
+ProfessionalBrandPlan + EditorialPlanGenerationResult
     ↓
 ApplicationResult
 ```
@@ -63,8 +63,12 @@ In the real implementation, some stages may run in parallel after the initial ca
 - `TargetedCVGenerationResult`: safe metadata and accepted generated CV for one vacancy.
 - `TargetedCVAuditResult`: local evidence audit for targeted CV content, roles, dates, skills, keywords and metrics.
 - `TargetedCVATSAudit`: local ATS-oriented score for one targeted CV using fixed explainable weights.
+- `ApplicationCommunicationKit`: cover letter, recruiter message, application email and subjects for one vacancy, generated only from structured profile, job, compatibility, validated targeted CV and output language.
+- `ApplicationCommunicationGenerationResult`: safe metadata and accepted communication kit for one vacancy.
+- `ProfessionalBrandPlan`: four-week LinkedIn editorial plan with exactly twelve professional posts, generated only from structured profile, market, compatibility, final audit and output language.
+- `EditorialPlanGenerationResult`: safe metadata and accepted professional brand plan.
 - `CommunicationOutput`: headhunter messages and one cover letter per job.
-- `FourWeekContentPlan`: eight LinkedIn post suggestions, exactly two per week for four weeks.
+- `FourWeekContentPlan`: legacy eight-post content suggestion contract kept for backward-compatible examples.
 - `ApplicationResult`: top-level bundle for the complete future output. It must not include the full CV, HTML, files, API keys or Streamlit/session objects.
 
 ## Evidence Status
@@ -121,6 +125,14 @@ Binary exports are not part of the Pydantic model. Markdown, HTML, DOCX, PDF and
 The exported CV files must not contain scores, gaps, evidence excerpts, audit findings, prompts, raw responses, request IDs or tokens. Internal review information is kept in `review-summary.json` inside each ZIP vacancy folder.
 
 The DOCX layout is one-column and ATS-friendly, without tables, images or visual chrome. PDF output uses selectable text.
+
+## Professional Brand Editorial Plan
+
+`ProfessionalBrandPlan` contains four `EditorialCalendarWeek` objects and exactly twelve `LinkedInPostPlan` items. The calendar uses only Monday, Wednesday and Friday slots and avoids absolute dates.
+
+Each post includes hook, body, CTA, hashtags, keywords, evidence used, review claims and character count. Local audit validates length, diversity, evidence support, confidentiality, CTA quality and hashtag safety.
+
+Exports are generated in memory as Markdown, HTML, DOCX, PDF and `linkedin-editorial-plan.zip`. The ZIP contains README, manifest, calendar files and folders `week01` to `week04`. It must not contain images, videos, carousels, raw source documents, prompts, raw model responses, LinkedIn API integrations, tracking or auto-publishing artifacts.
 
 ## Structured Outputs Readiness
 

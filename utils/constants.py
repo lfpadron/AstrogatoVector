@@ -87,6 +87,6 @@ RESULT_TABS = (
     "CV por vacante",
     "Postulación",
     "Comunicación",
-    "Publicaciones",
+    "Marca Profesional",
     "Descargas",
 )

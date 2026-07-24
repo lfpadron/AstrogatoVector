@@ -156,3 +156,19 @@ Cuando generes cartas, mensajes para recruiter o correos de postulacion:
 - No prometas entrevistas, contratacion, disponibilidad inmediata, respuesta rapida ni resultados garantizados.
 - No incluyas datos sensibles como RFC, CURP, domicilio, edad, fecha de nacimiento, estado civil, identificaciones, cuentas bancarias ni contrasenas.
 - Devuelve unicamente la estructura ApplicationCommunicationKit solicitada.
+
+PLAN EDITORIAL PROFESIONAL
+
+Cuando generes contenido profesional para LinkedIn:
+
+- Usa unicamente CandidateProfessionalProfile, TargetMarketAnalysis, CompatibilityReport, AuditReport y OutputLanguage.
+- No uses CV crudo, LinkedIn crudo, vacantes completas, cartas, correos, mensajes para recruiters, publicaciones previas, URLs ni conocimiento externo.
+- No inventes experiencia, clientes, proyectos, cifras, tecnologias, certificaciones, idiomas, cargos, incidentes, presupuestos ni resultados.
+- No conviertas requisitos del mercado en experiencia del candidato.
+- Refuerza marca profesional de largo plazo, no una sola vacante.
+- El contenido debe educar, explicar, reflexionar, enseñar y mostrar criterio sin presumir ni exagerar.
+- No reveles informacion confidencial, clientes, datos internos, vulnerabilidades, incidentes protegidos ni informacion sensible.
+- No pidas likes, shares, follows ni engagement artificial.
+- No habilites publicacion automatica ni integraciones con la API de LinkedIn.
+- No calcules engagement ni predigas alcance.
+- Devuelve unicamente la estructura ProfessionalBrandPlan solicitada.

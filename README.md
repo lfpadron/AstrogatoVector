@@ -8,7 +8,13 @@ Astrogato Vector es un piloto funcional para capturar información profesional, 
 
 ## Estado
 
-Estado actual: posicionamiento LinkedIn, CV específico y kit completo de comunicación por vacante.
+- ✓ Perfil LinkedIn
+- ✓ Banner
+- ✓ Compatibilidad
+- ✓ Auditoría
+- ✓ CV por vacante
+- ✓ Kit de postulación
+- ✓ Plan editorial profesional
 
 ## Requisitos
 
@@ -56,7 +62,7 @@ Linux/macOS:
 cp .env.example .env
 ```
 
-La API de OpenAI se utiliza en el diagnóstico manual, la extracción profesional del candidato, el análisis estructurado de vacantes, la evaluación semántica de compatibilidad, la generación del perfil optimizado de LinkedIn, la generación de CV específico por vacante y la generación de comunicación de postulación por vacante. La auditoría final de LinkedIn y ATS, las auditorías de CV, las auditorías de comunicación y el paquete profesional descargable se calculan localmente a partir de resultados estructurados ya generados.
+La API de OpenAI se utiliza en el diagnóstico manual, la extracción profesional del candidato, el análisis estructurado de vacantes, la evaluación semántica de compatibilidad, la generación del perfil optimizado de LinkedIn, la generación de CV específico por vacante, la generación de comunicación de postulación por vacante y la generación del plan editorial profesional. La auditoría final de LinkedIn y ATS, las auditorías de CV, las auditorías de comunicación, la auditoría del plan editorial y las exportaciones descargables se calculan localmente a partir de resultados estructurados ya generados.
 
 Configuración OpenAI para diagnóstico:
 
@@ -113,6 +119,12 @@ Prueba local de comunicación de postulación por vacante con datos ficticios:
 
 ```bash
 uv run python scripts/test_application_communications.py
+```
+
+Prueba local del plan editorial profesional con datos ficticios:
+
+```bash
+uv run python scripts/test_editorial_plan.py
 ```
 
 ## JSON Schema
@@ -329,6 +341,29 @@ También puede probarse con datos ficticios:
 uv run python scripts/test_application_communications.py
 ```
 
+## Plan editorial profesional para LinkedIn
+
+Después de contar con perfil profesional, mercado objetivo, compatibilidad y auditoría integral válidos, la pestaña `Marca Profesional` permite generar un plan editorial de cuatro semanas.
+
+En esta etapa:
+
+- se genera un `ProfessionalBrandPlan` con exactamente cuatro semanas y doce publicaciones;
+- se usan únicamente `CandidateProfessionalProfile`, `TargetMarketAnalysis`, `CompatibilityReport`, `AuditReport` e idioma;
+- no se usa CV crudo, LinkedIn crudo, vacantes completas, cartas, correos, mensajes para recruiters, publicaciones previas, URLs ni conocimiento externo;
+- cada publicación incluye hook, texto, CTA, hashtags, keywords, evidencia usada, notas y claims que requieren revisión;
+- los CTAs abren conversación profesional y no piden likes, shares ni follows;
+- los hashtags se limitan a máximo cinco y deben relacionarse con evidencia, mercado, liderazgo, industria o tecnología;
+- las brechas de mercado no se presentan como experiencia demostrada;
+- las ediciones, validaciones y exportaciones se realizan localmente sin OpenAI;
+- se exporta Markdown, HTML, DOCX, PDF y `linkedin-editorial-plan.zip` en memoria;
+- no publica en LinkedIn, no usa LinkedIn API, no genera imágenes, video, carouseles, blog, newsletter, CRM ni tracking.
+
+También puede probarse con datos ficticios:
+
+```bash
+uv run python scripts/test_editorial_plan.py
+```
+
 ## Comportamiento actual
 
 - El consentimiento es obligatorio para procesar.
@@ -354,6 +389,7 @@ uv run python scripts/test_application_communications.py
 - Se genera un paquete profesional descargable en Markdown, HTML, DOCX, PDF y ZIP desde resultados validados y contenido editado.
 - Se genera un CV específico por vacante con exportación Markdown, DOCX, PDF y ZIP desde evidencia estructurada y compatibilidad.
 - Se genera un kit de comunicación por vacante con carta, mensaje para recruiter, correo, asuntos y exportación Markdown, TXT, DOCX, PDF y ZIP.
+- Se genera un plan editorial profesional para LinkedIn con doce borradores editables y exportación Markdown, HTML, DOCX, PDF y ZIP.
 - Existen modelos Pydantic v2 para entrada, evidencia, mercado, perfil, compatibilidad, auditorías, comunicación, contenidos y resultado completo.
 - Los contratos están preparados para JSON Schema y futuros Structured Outputs.
 - Existen ejemplos ficticios en `schemas/examples.py` para validar serialización sin usar datos reales.
@@ -368,6 +404,7 @@ uv run python scripts/test_application_communications.py
 - La generación de LinkedIn envía solo el perfil profesional estructurado, el mercado estructurado y el idioma.
 - La generación de CV por vacante envía solo el perfil profesional estructurado, una vacante estructurada, su compatibilidad estructurada y el idioma.
 - La generación de comunicación por vacante envía solo perfil reducido, vacante estructurada, compatibilidad estructurada, CV específico validado e idioma.
+- La generación del plan editorial envía solo perfil profesional estructurado, mercado estructurado, compatibilidad estructurada, auditoría integral e idioma.
 - El banner PNG se genera localmente con Pillow, sin llamadas a OpenAI, imágenes remotas, logos ni fondos externos.
 - La auditoría integral se calcula localmente y no reenvía CV, vacantes completas, perfil de LinkedIn original ni banner PNG.
 - El paquete profesional se exporta localmente en memoria, no llama OpenAI, no usa servicios web y no almacena documentos permanentemente.
@@ -375,6 +412,8 @@ uv run python scripts/test_application_communications.py
 - Los CVs por vacante no incluyen scores, brechas, evidencias internas, prompts, respuestas crudas, request IDs ni tokens.
 - Los kits de postulación no incluyen CV original, vacantes crudas, evidencia completa, prompts, respuestas crudas, secretos, request IDs ni tokens.
 - Los kits de postulación no envían correos, no conectan cuentas externas y no inventan nombres de recruiters.
+- El plan editorial no incluye CV original, LinkedIn original, vacantes completas, prompts, respuestas crudas, secretos, request IDs ni tokens.
+- El plan editorial no publica automáticamente, no usa LinkedIn API, no incluye imágenes, videos, carouseles, newsletter, CRM ni tracking.
 - Los bytes del banner viven solo en memoria de sesión y se reemplazan al regenerar.
 - Antes de la extracción se aplica un filtro preventivo limitado de patrones sensibles evidentes.
 - Los enlaces se consultan solo como páginas públicas de texto mediante HTTP/HTTPS.
@@ -421,10 +460,10 @@ Algunos sitios no entregan texto visible en la respuesta inicial. Copia y pega l
 
 - La lectura de enlaces no accede a contenido detrás de login, muros, cookies, JavaScript obligatorio o bloqueos anti-automatización.
 - No implementa OCR.
-- No genera publicaciones, PowerPoint ni Excel.
+- No publica automáticamente en LinkedIn ni usa LinkedIn API.
+- No genera imágenes, video, carouseles, blog, newsletter, CRM, tracking, PowerPoint ni Excel.
 - Los correos de postulación son borradores descargables; no se envían desde la app.
 
 ## Próximo incremento
 
-Generación de un plan de cuatro semanas de publicaciones para LinkedIn, basado en la experiencia respaldada, objetivos profesionales y temas del mercado, sin revelar información confidencial ni inventar logros.
-# AstrogatoVector
+Implementar un simulador inteligente de entrevistas técnicas y conductuales, utilizando el perfil profesional y los resultados estructurados como base.

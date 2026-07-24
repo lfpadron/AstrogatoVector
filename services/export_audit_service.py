@@ -62,6 +62,44 @@ _APPLICATION_COMMUNICATION_PLACEHOLDERS = (
     "xxx",
     "tbd",
 )
+_EDITORIAL_PLAN_ROOT = "linkedin-editorial-plan"
+_EDITORIAL_PLAN_REQUIRED_SECTIONS = (
+    "Plan editorial profesional de LinkedIn",
+    "Resumen",
+    "Calendario editorial",
+    "Semana 1",
+    "Semana 2",
+    "Semana 3",
+    "Semana 4",
+    "Hook",
+    "Texto",
+    "CTA",
+    "Hashtags",
+    "Keywords utilizadas",
+    "Evidencia utilizada",
+)
+_EDITORIAL_PLAN_FORBIDDEN_TERMS = (
+    "request_id",
+    "input_tokens",
+    "output_tokens",
+    "raw_response",
+    "api key",
+    "openai-response",
+    "raw-cv",
+    "original-cv",
+    "cv original completo",
+    "linkedin original completo",
+    "vacante completa",
+    "engagement esperado",
+    "alcance estimado",
+)
+_EDITORIAL_PLAN_PLACEHOLDERS = (
+    "lorem ipsum",
+    "por completar",
+    "pendiente",
+    "xxx",
+    "tbd",
+)
 
 
 class ExportAuditService:
@@ -465,6 +503,160 @@ class ExportAuditService:
             warnings.extend(result.warnings)
         return ExportAuditResult(passed=not findings, findings=findings, warnings=warnings)
 
+    def audit_editorial_plan_markdown(self, data: bytes) -> ExportAuditResult:
+        """Audit one editorial plan Markdown export."""
+        findings: list[str] = []
+        warnings: list[str] = []
+        _validate_size(data, MAX_INDIVIDUAL_EXPORT_SIZE_MB, "editorial_plan_markdown", findings)
+        text = _decode_utf8(data, findings, "editorial_plan_markdown")
+        if text:
+            if "<html" in text.casefold():
+                findings.append("editorial_plan_markdown: no debe contener HTML.")
+            _validate_editorial_plan_sections(text, "editorial_plan_markdown", findings)
+            _validate_no_editorial_plan_internal_terms(text, "editorial_plan_markdown", findings)
+        return ExportAuditResult(passed=not findings, findings=findings, warnings=warnings)
+
+    def audit_editorial_plan_html(self, data: bytes) -> ExportAuditResult:
+        """Audit one editorial plan HTML export."""
+        findings: list[str] = []
+        _validate_size(data, MAX_INDIVIDUAL_EXPORT_SIZE_MB, "editorial_plan_html", findings)
+        text = _decode_utf8(data, findings, "editorial_plan_html")
+        if text:
+            lowered = text.casefold()
+            if "<!doctype html>" not in lowered:
+                findings.append("editorial_plan_html: falta doctype HTML5.")
+            if "<html" not in lowered:
+                findings.append("editorial_plan_html: falta etiqueta html.")
+            if "charset=\"utf-8\"" not in lowered and "charset='utf-8'" not in lowered:
+                findings.append("editorial_plan_html: falta charset UTF-8.")
+            if "<script" in lowered:
+                findings.append("editorial_plan_html: no debe contener scripts.")
+            if "http://" in lowered or "https://" in lowered:
+                findings.append("editorial_plan_html: no debe contener recursos remotos.")
+            if "</html>" not in lowered or "</body>" not in lowered:
+                findings.append("editorial_plan_html: estructura no cerrada.")
+            _validate_editorial_plan_sections(text, "editorial_plan_html", findings)
+            _validate_no_editorial_plan_internal_terms(text, "editorial_plan_html", findings)
+        return ExportAuditResult(passed=not findings, findings=findings)
+
+    def audit_editorial_plan_docx(self, data: bytes) -> ExportAuditResult:
+        """Audit one editorial plan DOCX export."""
+        findings: list[str] = []
+        _validate_size(data, MAX_INDIVIDUAL_EXPORT_SIZE_MB, "editorial_plan_docx", findings)
+        if not zipfile.is_zipfile(io.BytesIO(data)):
+            findings.append("editorial_plan_docx: firma ZIP inválida.")
+            return ExportAuditResult(passed=False, findings=findings)
+        try:
+            document = Document(io.BytesIO(data))
+        except Exception as exc:
+            findings.append(f"editorial_plan_docx: no se pudo abrir con python-docx: {exc}")
+            return ExportAuditResult(passed=False, findings=findings)
+        text = "\n".join(paragraph.text for paragraph in document.paragraphs)
+        if not text.strip():
+            findings.append("editorial_plan_docx: no contiene párrafos.")
+        if document.inline_shapes:
+            findings.append("editorial_plan_docx: no debe incluir imágenes.")
+        _validate_editorial_plan_sections(text, "editorial_plan_docx", findings)
+        _validate_no_editorial_plan_internal_terms(text, "editorial_plan_docx", findings)
+        return ExportAuditResult(passed=not findings, findings=findings)
+
+    def audit_editorial_plan_pdf(self, data: bytes) -> ExportAuditResult:
+        """Audit one editorial plan PDF export."""
+        findings: list[str] = []
+        _validate_size(data, MAX_INDIVIDUAL_EXPORT_SIZE_MB, "editorial_plan_pdf", findings)
+        if not data.startswith(b"%PDF"):
+            findings.append("editorial_plan_pdf: firma inválida.")
+            return ExportAuditResult(passed=False, findings=findings)
+        try:
+            reader = PdfReader(io.BytesIO(data))
+            if len(reader.pages) < 1:
+                findings.append("editorial_plan_pdf: no contiene páginas.")
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
+            if len(text.strip()) < 100:
+                findings.append("editorial_plan_pdf: no contiene texto seleccionable suficiente.")
+            _validate_editorial_plan_sections(text, "editorial_plan_pdf", findings)
+            _validate_no_editorial_plan_internal_terms(text, "editorial_plan_pdf", findings)
+        except Exception as exc:
+            findings.append(f"editorial_plan_pdf: no se pudo abrir: {exc}")
+        return ExportAuditResult(passed=not findings, findings=findings)
+
+    def audit_editorial_plan_zip(self, data: bytes) -> ExportAuditResult:
+        """Audit the editorial plan ZIP package."""
+        findings: list[str] = []
+        _validate_size(data, MAX_FINAL_ZIP_SIZE_MB, "editorial_plan_zip", findings)
+        try:
+            with zipfile.ZipFile(io.BytesIO(data), "r") as archive:
+                names = archive.namelist()
+                lowered = {name.casefold() for name in names}
+                required = {
+                    f"{_EDITORIAL_PLAN_ROOT}/readme.txt",
+                    f"{_EDITORIAL_PLAN_ROOT}/manifest.json",
+                    f"{_EDITORIAL_PLAN_ROOT}/calendar.md",
+                    f"{_EDITORIAL_PLAN_ROOT}/calendar.html",
+                    f"{_EDITORIAL_PLAN_ROOT}/calendar.docx",
+                    f"{_EDITORIAL_PLAN_ROOT}/calendar.pdf",
+                    *{f"{_EDITORIAL_PLAN_ROOT}/week{index:02d}/week{index:02d}.md" for index in range(1, 5)},
+                }
+                for required_name in required:
+                    if required_name not in lowered:
+                        findings.append(f"editorial_plan_zip: falta {required_name}.")
+                for week in range(1, 5):
+                    for slot in range(1, 4):
+                        required_post = f"{_EDITORIAL_PLAN_ROOT}/week{week:02d}/post{slot:02d}.md"
+                        if required_post not in lowered:
+                            findings.append(f"editorial_plan_zip: falta {required_post}.")
+                for name in names:
+                    normalized = name.replace("\\", "/")
+                    if normalized.startswith("/") or ":" in normalized or ".." in normalized.split("/"):
+                        findings.append(f"editorial_plan_zip: ruta insegura {name}.")
+                    if not normalized.startswith(f"{_EDITORIAL_PLAN_ROOT}/"):
+                        findings.append(f"editorial_plan_zip: archivo fuera de raíz {name}.")
+                    basename = normalized.rsplit("/", 1)[-1].casefold()
+                    if basename in {
+                        "prompt.txt",
+                        "openai-response.json",
+                        "raw-cv.txt",
+                        "original-cv.pdf",
+                        "original-linkedin.txt",
+                        "raw-jobs.txt",
+                    } or basename.endswith(_FORBIDDEN_ZIP_SUFFIXES):
+                        findings.append(f"editorial_plan_zip: archivo prohibido {name}.")
+                for name in names:
+                    lowered_name = name.casefold()
+                    payload = archive.read(name)
+                    if lowered_name.endswith("/calendar.md"):
+                        findings.extend(self.audit_editorial_plan_markdown(payload).findings)
+                    elif lowered_name.endswith("/calendar.html"):
+                        findings.extend(self.audit_editorial_plan_html(payload).findings)
+                    elif lowered_name.endswith("/calendar.docx"):
+                        findings.extend(self.audit_editorial_plan_docx(payload).findings)
+                    elif lowered_name.endswith("/calendar.pdf"):
+                        findings.extend(self.audit_editorial_plan_pdf(payload).findings)
+                    elif lowered_name.endswith(".md"):
+                        text = _decode_utf8(payload, findings, "editorial_plan_zip_markdown")
+                        if text:
+                            _validate_no_editorial_plan_internal_terms(text, "editorial_plan_zip_markdown", findings)
+        except Exception as exc:
+            findings.append(f"editorial_plan_zip: no se pudo abrir: {exc}")
+        return ExportAuditResult(passed=not findings, findings=findings)
+
+    def audit_editorial_plan_all(self, exports: dict[str, bytes]) -> ExportAuditResult:
+        """Audit all editorial plan export formats."""
+        findings: list[str] = []
+        warnings: list[str] = []
+        checks = {
+            "markdown": self.audit_editorial_plan_markdown,
+            "html": self.audit_editorial_plan_html,
+            "docx": self.audit_editorial_plan_docx,
+            "pdf": self.audit_editorial_plan_pdf,
+            "zip": self.audit_editorial_plan_zip,
+        }
+        for key, audit_fn in checks.items():
+            result = audit_fn(exports.get(key, b""))
+            findings.extend(result.findings)
+            warnings.extend(result.warnings)
+        return ExportAuditResult(passed=not findings, findings=findings, warnings=warnings)
+
 
 def _decode_utf8(data: bytes, findings: list[str], label: str) -> str:
     if not data:
@@ -517,6 +709,23 @@ def _validate_application_review_summary(data: bytes, findings: list[str]) -> No
     for term in _APPLICATION_COMMUNICATION_FORBIDDEN_TERMS:
         if _strip_accents(term).casefold() in lowered and term != "compatibility_score":
             findings.append(f"application_communication_zip: review-summary contiene término interno no permitido: {term}.")
+
+
+def _validate_editorial_plan_sections(text: str, label: str, findings: list[str]) -> None:
+    normalized_text = _strip_accents(text).casefold()
+    for section in _EDITORIAL_PLAN_REQUIRED_SECTIONS:
+        if _strip_accents(section).casefold() not in normalized_text:
+            findings.append(f"{label}: falta sección {section}.")
+
+
+def _validate_no_editorial_plan_internal_terms(text: str, label: str, findings: list[str]) -> None:
+    lowered = _strip_accents(text).casefold()
+    for term in _EDITORIAL_PLAN_FORBIDDEN_TERMS:
+        if _strip_accents(term).casefold() in lowered:
+            findings.append(f"{label}: contiene término interno no permitido: {term}.")
+    for placeholder in _EDITORIAL_PLAN_PLACEHOLDERS:
+        if _strip_accents(placeholder).casefold() in lowered:
+            findings.append(f"{label}: contiene placeholder no permitido: {placeholder}.")
 
 
 def _strip_accents(value: str) -> str:

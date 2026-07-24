@@ -13,7 +13,7 @@ from schemas.evidence_models import CandidateProfessionalProfile
 from schemas.market_models import TargetMarketAnalysis
 from schemas.profile_models import LinkedInProfileOutput
 from services.final_audit_pipeline import FinalAuditRun, missing_final_audit_result, run_final_audit_pipeline
-from utils.session import SessionKeys
+from utils.session import SessionKeys, clear_editorial_plan_state
 
 FINAL_AUDIT_REPROCESS_FAILURE_MESSAGE = (
     "El nuevo intento de auditoría integral falló. "
@@ -59,6 +59,7 @@ def _store_final_audit_result(
     *,
     preserve_previous_on_failure: bool,
 ) -> None:
+    previous_fingerprint = st.session_state.get(SessionKeys.FINAL_AUDIT_FINGERPRINT)
     if (
         not result.success
         and preserve_previous_on_failure
@@ -76,10 +77,14 @@ def _store_final_audit_result(
     st.session_state[SessionKeys.FINAL_AUDIT_METHODOLOGY_VERSION] = result.methodology_version
 
     if result.success and result.linkedin_positioning is not None and result.ats_estimation is not None:
-        st.session_state[SessionKeys.FINAL_AUDIT_FINGERPRINT] = run.fingerprint if run else None
+        new_fingerprint = run.fingerprint if run else None
+        st.session_state[SessionKeys.FINAL_AUDIT_FINGERPRINT] = new_fingerprint
+        if previous_fingerprint != new_fingerprint:
+            clear_editorial_plan_state()
         return
 
     st.session_state[SessionKeys.FINAL_AUDIT_FINGERPRINT] = None
+    clear_editorial_plan_state()
 
 
 def _current_candidate_profile() -> CandidateProfessionalProfile | None:

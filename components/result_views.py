@@ -25,6 +25,10 @@ from components.application_communication_view import (
     render_application_communication_downloads_section,
     render_application_communication_tab,
 )
+from components.editorial_plan_view import (
+    render_editorial_plan_downloads_section,
+    render_editorial_plan_tab,
+)
 from components.job_analysis_flow import JOB_REPROCESS_FAILURE_MESSAGE, run_job_analysis_from_session
 from components.linkedin_profile_flow import (
     LINKEDIN_PROFILE_MISSING_STAGES_MESSAGE,
@@ -120,10 +124,12 @@ def render_results() -> None:
         _render_targeted_cv_tab()
     with tabs[5]:
         render_application_communication_tab()
+    with tabs[7]:
+        render_editorial_plan_tab()
     with tabs[8]:
         _render_downloads_tab()
 
-    for tab in tabs[6:8]:
+    for tab in tabs[6:7]:
         with tab:
             st.info(EMPTY_RESULT_MESSAGE)
 
@@ -1692,8 +1698,9 @@ def _render_downloads_tab() -> None:
     audit = _current_final_audit_report()
     stored_banner = _current_banner_render_result()
     stored_bytes = st.session_state.get(SessionKeys.BANNER_IMAGE_BYTES)
+    editorial_plan = st.session_state.get(SessionKeys.PROFESSIONAL_BRAND_PLAN)
 
-    if output is None and market is None and compatibility is None and audit is None and not stored_bytes:
+    if output is None and market is None and compatibility is None and audit is None and not stored_bytes and not editorial_plan:
         st.info(EMPTY_RESULT_MESSAGE)
         return
 
@@ -1703,6 +1710,8 @@ def _render_downloads_tab() -> None:
     _render_targeted_cv_downloads_section()
     st.divider()
     render_application_communication_downloads_section()
+    st.divider()
+    render_editorial_plan_downloads_section()
     st.divider()
     st.markdown("#### Descargas individuales existentes")
     _render_banner_download_section(output, stored_banner, stored_bytes)

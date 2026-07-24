@@ -22,6 +22,12 @@ from schemas.communication_models import CommunicationOutput  # noqa: E402
 from schemas.compatibility_models import CompatibilityReport  # noqa: E402
 from schemas.content_models import FourWeekContentPlan  # noqa: E402
 from schemas.deliverable_models import FinalDeliverablePackage, FinalPackageBuildResult  # noqa: E402
+from schemas.editorial_plan_models import (  # noqa: E402
+    EditorialPlanAuditResult,
+    EditorialPlanEditValidationResult,
+    EditorialPlanGenerationResult,
+    ProfessionalBrandPlan,
+)
 from schemas.evidence_models import CandidateProfessionalProfile  # noqa: E402
 from schemas.extraction_models import CandidateExtractionResult, EvidenceAuditResult, PrivacyFilterResult  # noqa: E402
 from schemas.input_models import CandidateInput  # noqa: E402
@@ -69,6 +75,10 @@ MODELS = [
     ApplicationCommunicationAuditResult,
     CommunicationRedundancyAuditResult,
     ApplicationCommunicationEditValidationResult,
+    ProfessionalBrandPlan,
+    EditorialPlanGenerationResult,
+    EditorialPlanAuditResult,
+    EditorialPlanEditValidationResult,
     CommunicationOutput,
     FourWeekContentPlan,
     ApplicationResult,
